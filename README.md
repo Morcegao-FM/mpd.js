@@ -1,5 +1,7 @@
 # node mpd client
 
+BASED ON drhideg CODE - Support against idle failing
+
 Connect to a [music player daemon](http://musicpd.org) server, send commands,
 emit events.
 
