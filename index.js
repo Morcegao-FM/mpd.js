@@ -9,6 +9,7 @@ module.exports = MpdClient;
 MpdClient.Command = Command
 MpdClient.cmd = cmd;
 MpdClient.parseKeyValueMessage = parseKeyValueMessage;
+MpdClient.parseListArrayMessage = parseListArrayMessage;
 MpdClient.parseArrayMessage = parseArrayMessage;
 
 function MpdClient() {
@@ -204,6 +205,35 @@ function parseArrayMessage(msg) {
     else {
       obj[keyValue[1]] = keyValue[2];
     }
+  });
+  results.push(obj);
+  return results;
+}
+
+// Some attributes are sent repeated
+function parseListArrayMessage(msg) {
+  var results = [];
+  var obj = {};
+  var lastkey = "";
+
+  msg.split('\n').forEach(function(p) {
+    if(p.length === 0) {
+      return;
+    }
+    var keyValue = p.match(/([^ ]+): (.*)/);
+    if (keyValue == null) {
+      throw new Error('Could not parse entry "' + p + '"')
+    }
+
+    if (obj[keyValue[1]] !== undefined && obj[keyValue[1]] != lastkey ) {
+      results.push(obj);
+      obj = {};
+      obj[keyValue[1]] = keyValue[2];
+    }
+    else {
+      obj[keyValue[1]] = keyValue[2];
+    }
+    lastkey = obj[keyValue[1]] ;
   });
   results.push(obj);
   return results;
